@@ -30,17 +30,23 @@ The following **additional** features are implemented:
 
 ## Video Walkthrough
 
-Here is a reminder on how to embed Loom videos on GitHub. Feel free to remove this reminder once you upload your README. 
+Here is a reminder on how to embed Loom videos on GitHub. Feel free to remove this reminder once you upload your README.
 
 [Guide](https://www.youtube.com/watch?v=GA92eKlYio4) .
 
-<div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/014e2fb011a540448d90991d1039ad78?sid=51768455-3348-4241-b527-05178be7bd81" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+<div>
+    <a href="https://www.loom.com/share/014e2fb011a540448d90991d1039ad78">
+    </a>
+    <a href="https://www.loom.com/share/014e2fb011a540448d90991d1039ad78">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/014e2fb011a540448d90991d1039ad78-cbb244583f203af3-full-play.gif">
+    </a>
+  </div>
 
 ## Notes
 
 Describe any challenges encountered while building the app:
 
-- Getting aclaimated with xCode 
+- Getting aclaimated with xCode
 - Handling keyboard input efficiently
 - Implementing correct letter validation logic
 - Managing UI updates dynamically
