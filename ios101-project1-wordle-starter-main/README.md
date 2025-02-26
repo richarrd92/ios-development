@@ -34,6 +34,7 @@ Here is a reminder on how to embed Loom videos on GitHub. Feel free to remove th
 
 [Guide](https://www.youtube.com/watch?v=GA92eKlYio4) .
 
+<div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/014e2fb011a540448d90991d1039ad78?sid=51768455-3348-4241-b527-05178be7bd81" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 ## Notes
 
