@@ -83,3 +83,21 @@ enum WeatherCode: Int {
     }
   }
 }
+
+struct CurrentWeatherForecast: Decodable { // conform to the Decodable protocol
+  let windSpeed: Double
+  let windDirection: Double
+  let temperature: Double
+  let weatherCodeRaw: Int
+  var weatherCode: WeatherCode {
+    return WeatherCode(rawValue: weatherCodeRaw) ?? .clearSky
+  }
+    
+    private enum CodingKeys: String, CodingKey {
+      case windSpeed = "windspeed"
+      case windDirection = "winddirection"
+      case temperature = "temperature"
+      case weatherCodeRaw = "weathercode"
+    }
+}
+
