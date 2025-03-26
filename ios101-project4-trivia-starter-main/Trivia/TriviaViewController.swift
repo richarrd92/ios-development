@@ -1,110 +1,136 @@
 //
-//  ViewController.swift
+//  TriviaViewController.swift
 //  Trivia
 //
-//  Created by Mari Batilando on 4/6/23.
+//  Created by Richard M on 3/10/25.
 //
 
 import UIKit
 
-class TriviaViewController: UIViewController {
-  
-  @IBOutlet weak var currentQuestionNumberLabel: UILabel!
-  @IBOutlet weak var questionContainerView: UIView!
-  @IBOutlet weak var questionLabel: UILabel!
-  @IBOutlet weak var categoryLabel: UILabel!
-  @IBOutlet weak var answerButton0: UIButton!
-  @IBOutlet weak var answerButton1: UIButton!
-  @IBOutlet weak var answerButton2: UIButton!
-  @IBOutlet weak var answerButton3: UIButton!
-  
-  private var questions = [TriviaQuestion]()
-  private var currQuestionIndex = 0
-  private var numCorrectQuestions = 0
-  
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    addGradient()
-    questionContainerView.layer.cornerRadius = 8.0
-    // TODO: FETCH TRIVIA QUESTIONS HERE
-  }
-  
-  private func updateQuestion(withQuestionIndex questionIndex: Int) {
-    currentQuestionNumberLabel.text = "Question: \(questionIndex + 1)/\(questions.count)"
-    let question = questions[questionIndex]
-    questionLabel.text = question.question
-    categoryLabel.text = question.category
-    let answers = ([question.correctAnswer] + question.incorrectAnswers).shuffled()
-    if answers.count > 0 {
-      answerButton0.setTitle(answers[0], for: .normal)
-    }
-    if answers.count > 1 {
-      answerButton1.setTitle(answers[1], for: .normal)
-      answerButton1.isHidden = false
-    }
-    if answers.count > 2 {
-      answerButton2.setTitle(answers[2], for: .normal)
-      answerButton2.isHidden = false
-    }
-    if answers.count > 3 {
-      answerButton3.setTitle(answers[3], for: .normal)
-      answerButton3.isHidden = false
-    }
-  }
-  
-  private func updateToNextQuestion(answer: String) {
-    if isCorrectAnswer(answer) {
-      numCorrectQuestions += 1
-    }
-    currQuestionIndex += 1
-    guard currQuestionIndex < questions.count else {
-      showFinalScore()
-      return
-    }
-    updateQuestion(withQuestionIndex: currQuestionIndex)
-  }
-  
-  private func isCorrectAnswer(_ answer: String) -> Bool {
-    return answer == questions[currQuestionIndex].correctAnswer
-  }
-  
-  private func showFinalScore() {
-    let alertController = UIAlertController(title: "Game over!",
-                                            message: "Final score: \(numCorrectQuestions)/\(questions.count)",
-                                            preferredStyle: .alert)
-    let resetAction = UIAlertAction(title: "Restart", style: .default) { [unowned self] _ in
-      currQuestionIndex = 0
-      numCorrectQuestions = 0
-      updateQuestion(withQuestionIndex: currQuestionIndex)
-    }
-    alertController.addAction(resetAction)
-    present(alertController, animated: true, completion: nil)
-  }
-  
-  private func addGradient() {
-    let gradientLayer = CAGradientLayer()
-    gradientLayer.frame = view.bounds
-    gradientLayer.colors = [UIColor(red: 0.54, green: 0.88, blue: 0.99, alpha: 1.00).cgColor,
-                            UIColor(red: 0.51, green: 0.81, blue: 0.97, alpha: 1.00).cgColor]
-    gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-    gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
-    view.layer.insertSublayer(gradientLayer, at: 0)
-  }
-  
-  @IBAction func didTapAnswerButton0(_ sender: UIButton) {
-    updateToNextQuestion(answer: sender.titleLabel?.text ?? "")
-  }
-  
-  @IBAction func didTapAnswerButton1(_ sender: UIButton) {
-    updateToNextQuestion(answer: sender.titleLabel?.text ?? "")
-  }
-  
-  @IBAction func didTapAnswerButton2(_ sender: UIButton) {
-    updateToNextQuestion(answer: sender.titleLabel?.text ?? "")
-  }
-  
-  @IBAction func didTapAnswerButton3(_ sender: UIButton) {
-    updateToNextQuestion(answer: sender.titleLabel?.text ?? "")
-  }
+// Structure representing a single question
+struct Question {
+    let text: String // The question text
+    let choices: [String] // Available answer choices
+    let correctAnswer: String // The correct answer
 }
 
+// ViewController for handling trivia game logic and UI
+class TriviaViewController: UIViewController {
+    
+    @IBOutlet weak var questionLabel: UILabel! // Label to display the current question
+    @IBOutlet var answerButtons: [UIButton]! // Collection of buttons for answer choices
+    @IBOutlet weak var countLabel: UILabel! // Label to display the question count
+    
+    // Array of questions used in the quiz
+    var questions: [Question] = [
+        Question(
+            text: "What is the capital of France?",
+            choices: ["Berlin", "Paris", "Rome", "Madrid"],
+            correctAnswer: "Paris"),
+        Question(
+            text: "What is 2 + 2?",
+            choices: ["3", "4", "5", "6"],
+            correctAnswer: "4"),
+        Question(
+            text: "What is 20 + 12?",
+            choices: ["44", "31", "32", "62"],
+            correctAnswer: "32")
+    ]
+    
+    var currentQuestionIndex = 0 // Index to track the current question
+    var score = 0 // Score to track correct answers
+    var originalButtonColor: UIColor? // Store original custom button background color
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Store the original background color of buttons
+        if let firstButton = answerButtons.first {
+            originalButtonColor = firstButton.backgroundColor
+        }
+        
+        loadQuestion() // Load the first question when the view is loaded
+    }
+    
+    // function to load the question
+    func loadQuestion() {
+        countLabel.layer.cornerRadius = 10
+        countLabel.layer.borderWidth = 2
+        countLabel.layer.borderColor = UIColor.darkGray.cgColor
+        countLabel.clipsToBounds = true
+
+        questionLabel.layer.cornerRadius = 10
+        questionLabel.layer.borderWidth = 2
+        questionLabel.layer.borderColor = UIColor.darkGray.cgColor
+        questionLabel.clipsToBounds = true
+
+        // Loop through each button to apply the border styling
+        for button in answerButtons {
+            button.layer.cornerRadius = 10
+            button.layer.borderWidth = 2
+            button.layer.borderColor = UIColor.darkGray.cgColor
+            button.clipsToBounds = true
+        }
+        
+        let currentQuestion = questions[currentQuestionIndex]
+        questionLabel.text = currentQuestion.text // Set the question text
+        // Question count
+        countLabel.text = "Question: \(currentQuestionIndex + 1)/\(questions.count)"
+
+        
+        
+        // Assign choices to buttons and reset their colors
+        for (index, button) in answerButtons.enumerated() {
+            button.setTitle(currentQuestion.choices[index], for: .normal)
+            button.backgroundColor = originalButtonColor // Reset to original background
+        }
+    }
+
+    // Function triggered when an answer is selected
+    @IBAction func answerSelected(_ sender: UIButton) {
+        let selectedAnswer = sender.currentTitle // Get the text of the selected button
+        let correctAnswer = questions[currentQuestionIndex].correctAnswer // Get the correct answer
+        
+        // Check if the selected answer is correct
+        if selectedAnswer == correctAnswer {
+            score += 1 // Increment score if correct
+            // Dark Green -> correct
+            sender.backgroundColor = UIColor(red: 0.0, green: 0.7, blue: 0.0, alpha: 1.0)
+        } else {
+            // Dark Red -> incorrect
+            sender.backgroundColor = UIColor(red: 0.7, green: 0.0, blue: 0.0, alpha: 1.0)
+        }
+        
+        // Reset button color and load next question after a delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            sender.backgroundColor = self.originalButtonColor // Reset button color
+            self.nextQuestion() // Load next question
+        }
+    }
+    
+    // Function to move to the next question or display the final score
+    func nextQuestion() {
+        if currentQuestionIndex < questions.count - 1 {
+            currentQuestionIndex += 1 // Move to the next question
+            loadQuestion() // Load the new question
+        } else {
+            showFinalScore() // Show the final score if all questions are answered
+        }
+    }
+    
+    // Function to display final score in an alert
+    func showFinalScore() {
+        let alert = UIAlertController(title: "Quiz Completed", message: "Your score: \(score)/\(questions.count)", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Restart", style: .default, handler: { _ in
+            self.resetQuiz() // Restart the quiz when the user clicks "Restart"
+        }))
+        present(alert, animated: true)
+    }
+    
+    // Function to reset the quiz to the initial state
+    func resetQuiz() {
+        currentQuestionIndex = 0 // Reset question index
+        score = 0 // Reset score
+        loadQuestion() // Load the first question again
+    }
+}
