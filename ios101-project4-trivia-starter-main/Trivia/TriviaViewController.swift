@@ -8,10 +8,39 @@
 import UIKit
 
 // Structure representing a single question
-struct Question {
-    let text: String // The question text
-    let choices: [String] // Available answer choices
-    let correctAnswer: String // The correct answer
+//struct Question {
+//    let text: String // The question text
+//    let choices: [String] // Available answer choices
+//    let correctAnswer: String // The correct answer
+//}
+
+
+// Structure representing a single question
+struct Question: Decodable {
+    let text: String
+    let choices: [String]
+    let correctAnswer: String
+    
+    enum CodingKeys: String, CodingKey {
+        case text = "question"
+        case correctAnswer = "correct_answer"
+        case incorrectAnswers = "incorrect_answers"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.correctAnswer = try container.decode(String.self, forKey: .correctAnswer)
+        let incorrectAnswers = try container.decode([String].self, forKey: .incorrectAnswers)
+        
+        // shuffle for randomness
+        self.choices = (incorrectAnswers + [correctAnswer]).shuffled()
+    }
+}
+
+// Struct to match API response format
+struct TriviaResponse: Decodable {
+    let results: [Question]
 }
 
 // ViewController for handling trivia game logic and UI
@@ -21,21 +50,24 @@ class TriviaViewController: UIViewController {
     @IBOutlet var answerButtons: [UIButton]! // Collection of buttons for answer choices
     @IBOutlet weak var countLabel: UILabel! // Label to display the question count
     
+//    // Array of questions used in the quiz
+//    var questions: [Question] = [
+//        Question(
+//            text: "What is the capital of France?",
+//            choices: ["Berlin", "Paris", "Rome", "Madrid"],
+//            correctAnswer: "Paris"),
+//        Question(
+//            text: "What is 2 + 2?",
+//            choices: ["3", "4", "5", "6"],
+//            correctAnswer: "4"),
+//        Question(
+//            text: "What is 20 + 12?",
+//            choices: ["44", "31", "32", "62"],
+//            correctAnswer: "32")
+//    ]
+    
     // Array of questions used in the quiz
-    var questions: [Question] = [
-        Question(
-            text: "What is the capital of France?",
-            choices: ["Berlin", "Paris", "Rome", "Madrid"],
-            correctAnswer: "Paris"),
-        Question(
-            text: "What is 2 + 2?",
-            choices: ["3", "4", "5", "6"],
-            correctAnswer: "4"),
-        Question(
-            text: "What is 20 + 12?",
-            choices: ["44", "31", "32", "62"],
-            correctAnswer: "32")
-    ]
+    var questions: [Question] = []
     
     var currentQuestionIndex = 0 // Index to track the current question
     var score = 0 // Score to track correct answers
@@ -49,11 +81,35 @@ class TriviaViewController: UIViewController {
             originalButtonColor = firstButton.backgroundColor
         }
         
-        loadQuestion() // Load the first question when the view is loaded
+//        loadQuestion() // Load the first question when the view is loaded
+        fetchQuestions() // Fetch questions from API when view is loaded
     }
+    
+    func fetchQuestions() {
+        let urlString = "https://opentdb.com/api.php?amount=10&category=21&difficulty=easy&type=multiple"
+        guard let url = URL(string: urlString) else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(TriviaResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.questions = decodedData.results
+                    self.loadQuestion()
+                }
+            } catch {
+                print("Error decoding data: \(error)")
+            }
+        }.resume()
+    }
+    
     
     // function to load the question
     func loadQuestion() {
+        // ensure questions loaded
+        guard !questions.isEmpty else { return }
+        
         countLabel.layer.cornerRadius = 10
         countLabel.layer.borderWidth = 2
         countLabel.layer.borderColor = UIColor.darkGray.cgColor
@@ -74,8 +130,7 @@ class TriviaViewController: UIViewController {
         
         let currentQuestion = questions[currentQuestionIndex]
         questionLabel.text = currentQuestion.text // Set the question text
-        // Question count
-        countLabel.text = "Question: \(currentQuestionIndex + 1)/\(questions.count)"
+        countLabel.text = "Question: \(currentQuestionIndex + 1)/\(questions.count)" // Question count
 
         
         
@@ -131,6 +186,7 @@ class TriviaViewController: UIViewController {
     func resetQuiz() {
         currentQuestionIndex = 0 // Reset question index
         score = 0 // Reset score
-        loadQuestion() // Load the first question again
+//        loadQuestion() // Load the first question again
+        fetchQuestions() // Load the first question again
     }
 }
