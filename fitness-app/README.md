@@ -70,6 +70,17 @@ StreakFit is a fitness tracker iOS app that helps users build consistent workout
 
   ![My Image](./appFlow/Streak.jpg)
 
+  ## Video Walkthrough
+
+<div>
+    <a href="https://www.loom.com/share/0705141847dd4c99898b6aad469737cd">
+    </a>
+    <a href="https://www.loom.com/share/0705141847dd4c99898b6aad469737cd">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/0705141847dd4c99898b6aad469737cd-f3d6fff9bda63b70-full-play.gif">
+    </a>
+  </div>
+
+
 ### 3. Navigation
 
 **Tab Navigation** (Tab to Screen)
