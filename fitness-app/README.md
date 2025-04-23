@@ -51,7 +51,7 @@ StreakFit is a fitness tracker iOS app that helps users build consistent workout
 
   ![My Image](./appFlow/home.jpg)
 
-- [ ] **Workout**
+- [x] **Workout**
   * View list of exercises
   * Tap to check off each part (sets/reps/timer)
   * Start/stop timers for rest or exercise
@@ -81,15 +81,15 @@ StreakFit is a fitness tracker iOS app that helps users build consistent workout
 
 **Flow Navigation** (Screen to Screen)
 
-- [ ] Home
+- [x] Home
   * → Workout
   * → Create Workout
   * → Streak Overview
 
-- [ ] Create Workout
+- [x] Create Workout
   * → Add Exercises
 
-- [ ] Workout Detail
+- [x] Workout Detail
   * → Mark completion
   * → Return to Home
 
