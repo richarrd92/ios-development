@@ -18,7 +18,7 @@ This course is a hands-on introduction to iOS development, focusing on building 
 
 ## Course Completion Certificate
 
-[![iOS Course completion Certificate](certificate.png)](Certificate.pdf)
+[![iOS Course completion Certificate](Certificate.png)](Certificate.pdf)
 
 
 
